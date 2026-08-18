@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="pet-container">
+    <img id="pet-sprite" src="" alt="Seu bichinho" />
+    <div class="status-bars">
+      <div class="bar">
+        <label>Felicidade</label>
+        <progress id="happiness-bar" value="0" max="100"></progress>
+      </div>
+      <div class="bar">
+        <label>Energia</label>
+        <progress id="energy-bar" value="0" max="100"></progress>
+      </div>
+      <div class="bar">
+        <label>Fome</label>
+        <progress id="hunger-bar" value="0" max="100"></progress>
+      </div>
+    </div>
+    <p id="pet-mood-text"></p>
+  </div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
