@@ -6,9 +6,9 @@ O projeto é uma evolução de um jogo de Tamagotchi feito anteriormente em Java
 
 ## Screenshots
 
-| Popup | Nova aba | Configurações |
-|---|---|---|
-| _adicionar print_ | _adicionar print_ | _adicionar print_ |
+| Popup | Configurações |
+|---|---|
+| _adicionar print_ | _adicionar print_ |
 
 ## Funcionalidades
 
@@ -17,7 +17,7 @@ O projeto é uma evolução de um jogo de Tamagotchi feito anteriormente em Java
 - ⏱️ Rastreamento de tempo por aba/domínio, com classificação em sites de distração, produtivos e neutros
 - 💛 Sistema de humor com 3 atributos: felicidade, energia e fome, que evoluem com o tempo de navegação e com o tempo real
 - ⚙️ Página de Configurações para adicionar/remover sites das categorias de distração e produtivos, sem precisar editar código
-- 🖼️ Interface via popup (clique no ícone) e via nova aba (new tab override), com ranking dos sites mais usados no dia
+- 🖼️ Interface via popup (clique no ícone), com ranking dos sites mais usados no dia
 - 🔔 Notificações leves quando o bichinho precisa de atenção
 - 💾 Persistência local via `chrome.storage` — nenhum dado sai do navegador, sem backend
 
@@ -38,8 +38,8 @@ tamagotchi-produtividade/
 ├── notifications.js      # regras de notificação
 ├── sprites.js             # matrizes de pixel art por espécie x estado de humor
 ├── popup/                 # UI do popup (clique no ícone) — visual de dispositivo Tamagotchi
-├── newtab/                # UI da nova aba — mesmo visual, com ranking de sites
 ├── options/                # página de Configurações: sites, cor da casca e espécie do bichinho
+├── newtab/                # UI alternativa de nova aba (código mantido, override desativado no manifest)
 └── icons/                  # ícones da extensão
 ```
 
@@ -54,7 +54,7 @@ A lógica de humor (`mood-rules.js`) é separada do storage (`state.js` e `backg
 2. Abra `chrome://extensions` no Chrome.
 3. Ative o **Modo do desenvolvedor** (canto superior direito).
 4. Clique em **Carregar sem compactação** e selecione a pasta do projeto.
-5. Clique no ícone da extensão ou abra uma nova aba para ver o bichinho.
+5. Clique no ícone da extensão na barra de ferramentas para ver o bichinho.
 
 ## Personalizando
 
@@ -80,6 +80,7 @@ const MOOD_RATE_PER_MINUTE = {
 - [ ] Tornar as taxas de humor configuráveis pela UI de Configurações
 - [ ] Extrair a lógica de renderização compartilhada entre popup e newtab
 - [ ] Aplicar o visual de dispositivo também na página de Configurações
+- [ ] Reativar a nova aba como opção configurável (toggle em Configurações), em vez de override fixo
 - [ ] Publicar na Chrome Web Store
 - [ ] Gráfico de histórico de humor ao longo dos dias
 
