@@ -1,4 +1,8 @@
-import { classifyDomain, calculateMoodDelta } from "./mood-rules.js";
+import {
+  classifyDomain,
+  calculateMoodDelta,
+  initSiteLists,
+} from "./mood-rules.js";
 import { applyMoodDelta, applyHungerDecay, initPetState } from "./state.js";
 import { checkAndNotify } from "./notifications.js";
 
@@ -7,6 +11,7 @@ const ALARM_PERIOD_MINUTES = 5;
 
 chrome.runtime.onInstalled.addListener(() => {
   initPetState();
+  initSiteLists();
   chrome.alarms.create(ALARM_NAME, { periodInMinutes: ALARM_PERIOD_MINUTES });
 });
 
@@ -23,12 +28,21 @@ function getDomain(url) {
 }
 
 async function getSession() {
-  const { currentDomain, sessionStart } = await chrome.storage.session.get(["currentDomain", "sessionStart"]);
-  return { currentDomain: currentDomain || null, sessionStart: sessionStart || null };
+  const { currentDomain, sessionStart } = await chrome.storage.session.get([
+    "currentDomain",
+    "sessionStart",
+  ]);
+  return {
+    currentDomain: currentDomain || null,
+    sessionStart: sessionStart || null,
+  };
 }
 
 async function setSession(domain, start) {
-  await chrome.storage.session.set({ currentDomain: domain, sessionStart: start });
+  await chrome.storage.session.set({
+    currentDomain: domain,
+    sessionStart: start,
+  });
 }
 
 async function switchDomain(newDomain) {
@@ -49,7 +63,7 @@ async function accumulateTime(domain, elapsedMs) {
   const previous = stored[key] || 0;
   await chrome.storage.local.set({ [key]: previous + elapsedMs });
 
-  const category = classifyDomain(domain);
+  const category = await classifyDomain(domain); // <-- await adicionado aqui
   const delta = calculateMoodDelta(category, elapsedMs);
   await applyMoodDelta(delta);
 

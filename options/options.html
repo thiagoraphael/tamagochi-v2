@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Configurações — Tamagotchi da Produtividade</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <h1>Configurações</h1>
+
+  <section>
+    <h2>Sites de distração</h2>
+    <p class="hint">Tempo nesses sites reduz a felicidade e energia do bichinho.</p>
+    <div class="add-row">
+      <input type="text" id="distraction-input" placeholder="ex: youtube.com ou https://youtube.com" />
+      <button id="add-distraction-btn">Adicionar</button>
+    </div>
+    <ul id="distraction-list" class="site-list"></ul>
+  </section>
+
+  <section>
+    <h2>Sites produtivos</h2>
+    <p class="hint">Tempo nesses sites aumenta a felicidade e energia do bichinho.</p>
+    <div class="add-row">
+      <input type="text" id="productive-input" placeholder="ex: github.com ou https://github.com" />
+      <button id="add-productive-btn">Adicionar</button>
+    </div>
+    <ul id="productive-list" class="site-list"></ul>
+  </section>
+
+  <p id="save-feedback"></p>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

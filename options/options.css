@@ -1,0 +1,56 @@
+body {
+  font-family: sans-serif;
+  max-width: 480px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+h1 {
+  font-size: 20px;
+}
+
+section {
+  margin-bottom: 28px;
+}
+
+.hint {
+  font-size: 13px;
+  color: #666;
+}
+
+.add-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.add-row input {
+  flex: 1;
+  padding: 6px;
+}
+
+.site-list {
+  list-style: none;
+  padding: 0;
+}
+
+.site-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.site-list button {
+  background: none;
+  border: none;
+  color: #c0392b;
+  cursor: pointer;
+}
+
+#save-feedback {
+  font-size: 13px;
+  color: green;
+  height: 16px;
+}

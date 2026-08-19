@@ -1,19 +1,10 @@
-export const DISTRACTION_SITES = [
-  "youtube.com",
-  "instagram.com",
-  "tiktok.com",
-  "twitter.com",
-  "x.com",
-  "netflix.com",
-  "facebook.com",
-  "reddit.com"
+const DEFAULT_DISTRACTION_SITES = [
+  "youtube.com", "instagram.com", "tiktok.com",
+  "twitter.com", "x.com", "netflix.com", "facebook.com", "reddit.com"
 ];
 
-export const PRODUCTIVE_SITES = [
-  "github.com",
-  "stackoverflow.com",
-  "developer.mozilla.org",
-  "docs.google.com"
+const DEFAULT_PRODUCTIVE_SITES = [
+  "github.com", "stackoverflow.com", "developer.mozilla.org", "docs.google.com"
 ];
 
 const MOOD_RATE_PER_MINUTE = {
@@ -23,10 +14,31 @@ const MOOD_RATE_PER_MINUTE = {
   neutral: 0
 };
 
-export function classifyDomain(domain) {
+// Garante que as listas existem no storage na primeira execução
+export async function initSiteLists() {
+  const { distractionSites, productiveSites } = await chrome.storage.local.get([
+    "distractionSites", "productiveSites"
+  ]);
+  if (!distractionSites) {
+    await chrome.storage.local.set({ distractionSites: DEFAULT_DISTRACTION_SITES });
+  }
+  if (!productiveSites) {
+    await chrome.storage.local.set({ productiveSites: DEFAULT_PRODUCTIVE_SITES });
+  }
+}
+
+export async function classifyDomain(domain) {
   if (!domain) return "offline";
-  if (DISTRACTION_SITES.some(site => domain.includes(site))) return "distraction";
-  if (PRODUCTIVE_SITES.some(site => domain.includes(site))) return "productive";
+
+  const { distractionSites, productiveSites } = await chrome.storage.local.get([
+    "distractionSites", "productiveSites"
+  ]);
+
+  const distraction = distractionSites || DEFAULT_DISTRACTION_SITES;
+  const productive = productiveSites || DEFAULT_PRODUCTIVE_SITES;
+
+  if (distraction.some((site) => domain.includes(site))) return "distraction";
+  if (productive.some((site) => domain.includes(site))) return "productive";
   return "neutral";
 }
 
