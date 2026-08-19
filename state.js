@@ -46,3 +46,17 @@ export async function applyHungerDecay(elapsedMs) {
 
   await chrome.storage.local.set({ pet: updated });
 }
+
+const NOTIFY_COOLDOWN_MS = 30 * 60 * 1000; // 30 min entre notificações do mesmo tipo
+
+export async function shouldNotify(type) {
+  const key = `lastNotified:${type}`;
+  const stored = await chrome.storage.local.get(key);
+  const last = stored[key] || 0;
+  return Date.now() - last > NOTIFY_COOLDOWN_MS;
+}
+
+export async function markNotified(type) {
+  const key = `lastNotified:${type}`;
+  await chrome.storage.local.set({ [key]: Date.now() });
+}

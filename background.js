@@ -1,15 +1,15 @@
 import { classifyDomain, calculateMoodDelta } from "./mood-rules.js";
 import { applyMoodDelta, applyHungerDecay, initPetState } from "./state.js";
+import { checkAndNotify } from "./notifications.js";
 
 const ALARM_NAME = "pet-tick";
-const ALARM_PERIOD_MINUTES = 5; // checa a cada 5 min (mínimo permitido é 1)
+const ALARM_PERIOD_MINUTES = 5;
 
 chrome.runtime.onInstalled.addListener(() => {
   initPetState();
   chrome.alarms.create(ALARM_NAME, { periodInMinutes: ALARM_PERIOD_MINUTES });
 });
 
-// Garante que o alarme também exista se o service worker reiniciar
 chrome.runtime.onStartup.addListener(() => {
   chrome.alarms.create(ALARM_NAME, { periodInMinutes: ALARM_PERIOD_MINUTES });
 });
@@ -21,10 +21,6 @@ function getDomain(url) {
     return null;
   }
 }
-
-// --- Sessão (domínio atual + início) persistida em storage.session ---
-// storage.session sobrevive a suspensões do service worker,
-// diferente de variáveis normais (que seriam perdidas).
 
 async function getSession() {
   const { currentDomain, sessionStart } = await chrome.storage.session.get(["currentDomain", "sessionStart"]);
@@ -56,13 +52,18 @@ async function accumulateTime(domain, elapsedMs) {
   const category = classifyDomain(domain);
   const delta = calculateMoodDelta(category, elapsedMs);
   await applyMoodDelta(delta);
+
+  const { pet } = await chrome.storage.local.get("pet");
+  if (pet) await checkAndNotify(pet);
 }
 
-// --- Listeners de navegação ---
-
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
-  const tab = await chrome.tabs.get(tabId);
-  switchDomain(getDomain(tab.url));
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    switchDomain(getDomain(tab.url));
+  } catch (err) {
+    console.error("[bg] erro em onActivated:", err);
+  }
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
@@ -80,15 +81,15 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
   }
 });
 
-// --- Alarme de decaimento de fome ---
-
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_NAME) {
     const { pet } = await chrome.storage.local.get("pet");
     if (!pet) return;
 
-    const now = Date.now();
-    const elapsedMs = now - pet.lastUpdated;
+    const elapsedMs = Date.now() - pet.lastUpdated;
     await applyHungerDecay(elapsedMs);
+
+    const { pet: updatedPet } = await chrome.storage.local.get("pet");
+    await checkAndNotify(updatedPet);
   }
 });

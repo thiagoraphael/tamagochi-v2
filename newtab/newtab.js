@@ -19,11 +19,9 @@ const MOOD_TEXT_MAP = {
   hungry: "Seu bichinho está com fome! 🍔"
 };
 
-async function render() {
+async function renderPet() {
   const { pet } = await chrome.storage.local.get("pet");
   if (!pet) return;
-
-  console.log("[popup] pet:", pet);
 
   const visualState = determineVisualState(pet);
 
@@ -39,10 +37,34 @@ async function render() {
   document.getElementById("hunger-value").textContent = pet.hunger.toFixed(1);
 }
 
+async function renderTopSites() {
+  const all = await chrome.storage.local.get(null); // pega tudo do storage
+  const timeEntries = Object.entries(all)
+    .filter(([key]) => key.startsWith("time:"))
+    .map(([key, ms]) => ({ domain: key.replace("time:", ""), ms }))
+    .sort((a, b) => b.ms - a.ms)
+    .slice(0, 5); // top 5
+
+  const list = document.getElementById("top-sites-list");
+  list.innerHTML = "";
+
+  for (const entry of timeEntries) {
+    const minutes = (entry.ms / 60000).toFixed(1);
+    const li = document.createElement("li");
+    li.textContent = `${entry.domain} — ${minutes} min`;
+    list.appendChild(li);
+  }
+}
+
+function render() {
+  renderPet();
+  renderTopSites();
+}
+
 render();
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && changes.pet) {
+  if (area === "local") {
     render();
   }
 });
