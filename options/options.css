@@ -54,3 +54,43 @@ section {
   color: green;
   height: 16px;
 }
+
+.sub-label {
+  font-size: 13px;
+  color: #333;
+  margin: 12px 0 6px;
+}
+
+.swatch-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.swatch-row button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.swatch-row button.selected {
+  border-color: #222;
+}
+
+.species-row {
+  display: flex;
+  gap: 8px;
+}
+
+.species-row button {
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.species-row button.selected {
+  background: #333;
+  color: white;
+}

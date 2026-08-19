@@ -1,5 +1,55 @@
 import { initSiteLists } from "../mood-rules.js";
 
+const SHELL_COLORS = [
+  { name: "roxo", hex: "#7F77DD" },
+  { name: "rosa", hex: "#D4537E" },
+  { name: "verde", hex: "#639922" },
+  { name: "azul", hex: "#378ADD" },
+  { name: "coral", hex: "#D85A30" },
+];
+
+const PET_SPECIES = [
+  { key: "gato", label: "Gato" },
+  { key: "cachorro", label: "Cachorro" },
+  { key: "dino", label: "Dino" },
+  { key: "coelho", label: "Coelho" },
+];
+
+const DEFAULT_APPEARANCE = { shellColor: "#7F77DD", species: "gato" };
+
+async function loadAppearance() {
+  const { appearance } = await chrome.storage.local.get("appearance");
+  return appearance || DEFAULT_APPEARANCE;
+}
+
+async function saveAppearance(appearance) {
+  await chrome.storage.local.set({ appearance });
+  showFeedback("Salvo!");
+}
+
+function renderShellColors(container, current, onSelect) {
+  container.innerHTML = "";
+  SHELL_COLORS.forEach((c) => {
+    const btn = document.createElement("button");
+    btn.style.background = c.hex;
+    btn.setAttribute("aria-label", c.name);
+    if (c.hex === current) btn.classList.add("selected");
+    btn.addEventListener("click", () => onSelect(c.hex));
+    container.appendChild(btn);
+  });
+}
+
+function renderSpecies(container, current, onSelect) {
+  container.innerHTML = "";
+  PET_SPECIES.forEach((s) => {
+    const btn = document.createElement("button");
+    btn.textContent = s.label;
+    if (s.key === current) btn.classList.add("selected");
+    btn.addEventListener("click", () => onSelect(s.key));
+    container.appendChild(btn);
+  });
+}
+
 async function loadSites() {
   const { distractionSites, productiveSites } = await chrome.storage.local.get([
     "distractionSites",
@@ -51,25 +101,28 @@ function renderList(listEl, sites, onRemove) {
 }
 
 async function init() {
-  await initSiteLists(); // garante defaults se for a primeira vez
+  await initSiteLists();
 
-  let { distraction, productive } = await loadSites();
+  let appearance = await loadAppearance();
+  const shellContainer = document.getElementById("shell-colors");
+  const speciesContainer = document.getElementById("pet-species");
 
-  const distractionList = document.getElementById("distraction-list");
-  const productiveList = document.getElementById("productive-list");
-
-  function refresh() {
-    renderList(distractionList, distraction, async (site) => {
-      distraction = distraction.filter((s) => s !== site);
-      await saveSites(distraction, productive);
-      refresh();
+  function refreshAppearance() {
+    renderShellColors(shellContainer, appearance.shellColor, async (hex) => {
+      appearance = { ...appearance, shellColor: hex };
+      await saveAppearance(appearance);
+      refreshAppearance();
     });
-    renderList(productiveList, productive, async (site) => {
-      productive = productive.filter((s) => s !== site);
-      await saveSites(distraction, productive);
-      refresh();
+    renderSpecies(speciesContainer, appearance.species, async (key) => {
+      appearance = { ...appearance, species: key };
+      await saveAppearance(appearance);
+      refreshAppearance();
     });
   }
+
+  refreshAppearance();
+
+  let { distraction, productive } = await loadSites();
 
   refresh();
 

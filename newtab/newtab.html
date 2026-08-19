@@ -5,25 +5,37 @@
   <link rel="stylesheet" href="newtab.css" />
 </head>
 <body>
-  <div class="pet-container">
-    <img id="pet-sprite" src="" alt="Seu bichinho" />
-    <p id="pet-mood-text"></p>
+  <div id="device" class="device">
+    <div class="device-label">TAMAGOTCHI</div>
 
-    <div class="status-bars">
-      <div class="bar">
-        <label>Felicidade</label>
-        <progress id="happiness-bar" value="0" max="100"></progress>
-        <span id="happiness-value">0</span>
+    <div class="screen-frame">
+      <div class="screen">
+        <div id="pet-sprite" class="sprite-grid"></div>
       </div>
-      <div class="bar">
-        <label>Energia</label>
-        <progress id="energy-bar" value="0" max="100"></progress>
-        <span id="energy-value">0</span>
+    </div>
+
+    <div class="buttons">
+      <button class="device-btn" id="btn-options" title="Configurações"></button>
+      <button class="device-btn" id="btn-refresh" title="Atualizar"></button>
+    </div>
+
+    <p id="pet-mood-text" class="mood-text"></p>
+
+    <div class="status-card">
+      <div class="bar-row">
+        <span class="bar-label">Felicidade</span>
+        <div class="bar-track"><div id="happiness-bar" class="bar-fill happiness" style="width: 0%"></div></div>
+        <span id="happiness-value" class="bar-value">0</span>
       </div>
-      <div class="bar">
-        <label>Fome</label>
-        <progress id="hunger-bar" value="0" max="100"></progress>
-        <span id="hunger-value">0</span>
+      <div class="bar-row">
+        <span class="bar-label">Energia</span>
+        <div class="bar-track"><div id="energy-bar" class="bar-fill energy" style="width: 0%"></div></div>
+        <span id="energy-value" class="bar-value">0</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Fome</span>
+        <div class="bar-track"><div id="hunger-bar" class="bar-fill hunger" style="width: 0%"></div></div>
+        <span id="hunger-value" class="bar-value">0</span>
       </div>
     </div>
 
@@ -32,6 +44,7 @@
       <ul id="top-sites-list"></ul>
     </div>
   </div>
+
   <script type="module" src="newtab.js"></script>
 </body>
 </html>

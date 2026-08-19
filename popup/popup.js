@@ -1,40 +1,57 @@
-function determineVisualState(pet) {
+import { getSprite } from "../sprites.js";
+
+const DEFAULT_APPEARANCE = { shellColor: "#7F77DD", species: "gato" };
+
+function determineMood(pet) {
   if (pet.hunger > 80) return "hungry";
   if (pet.happiness < 30) return "sad";
   if (pet.energy < 30) return "tired";
   return "happy";
 }
 
-const SPRITE_MAP = {
-  happy: "../assets/pet-happy.svg",
-  tired: "../assets/pet-tired.svg",
-  sad: "../assets/pet-sad.svg",
-  hungry: "../assets/pet-hungry.svg"
+const MOOD_TEXT_MAP = {
+  happy: "Seu bichinho está feliz!",
+  tired: "Seu bichinho está cansado...",
+  sad: "Seu bichinho está triste.",
+  hungry: "Seu bichinho está com fome!",
 };
 
-const MOOD_TEXT_MAP = {
-  happy: "Seu bichinho está feliz! 🎉",
-  tired: "Seu bichinho está cansado... 😴",
-  sad: "Seu bichinho está triste. 😢",
-  hungry: "Seu bichinho está com fome! 🍔"
-};
+function renderSprite(species, mood) {
+  const grid = getSprite(species, mood);
+  const container = document.getElementById("pet-sprite");
+  container.innerHTML = "";
+  grid.forEach((row) => {
+    row.split("").forEach((cell) => {
+      const px = document.createElement("div");
+      px.className = "pixel";
+      px.style.background = cell === "1" ? "#3C4A34" : "transparent";
+      container.appendChild(px);
+    });
+  });
+}
 
 async function render() {
-  const { pet } = await chrome.storage.local.get("pet");
+  const { pet, appearance } = await chrome.storage.local.get([
+    "pet",
+    "appearance",
+  ]);
   if (!pet) return;
 
-  console.log("[popup] pet:", pet);
+  const { shellColor, species } = appearance || DEFAULT_APPEARANCE;
+  const mood = determineMood(pet);
 
-  const visualState = determineVisualState(pet);
+  document.getElementById("device").style.background = shellColor;
+  document.body.style.background = shellColor;
+  document.documentElement.style.background = shellColor;
+  document.getElementById("pet-mood-text").textContent = MOOD_TEXT_MAP[mood];
+  renderSprite(species, mood);
 
-  document.getElementById("pet-sprite").src = SPRITE_MAP[visualState];
-  document.getElementById("pet-mood-text").textContent = MOOD_TEXT_MAP[visualState];
+  document.getElementById("happiness-bar").style.width = pet.happiness + "%";
+  document.getElementById("energy-bar").style.width = pet.energy + "%";
+  document.getElementById("hunger-bar").style.width = pet.hunger + "%";
 
-  document.getElementById("happiness-bar").value = pet.happiness;
-  document.getElementById("energy-bar").value = pet.energy;
-  document.getElementById("hunger-bar").value = pet.hunger;
-
-  document.getElementById("happiness-value").textContent = pet.happiness.toFixed(1);
+  document.getElementById("happiness-value").textContent =
+    pet.happiness.toFixed(1);
   document.getElementById("energy-value").textContent = pet.energy.toFixed(1);
   document.getElementById("hunger-value").textContent = pet.hunger.toFixed(1);
 }
@@ -42,7 +59,19 @@ async function render() {
 render();
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && changes.pet) {
+  if (area === "local" && (changes.pet || changes.appearance)) {
     render();
   }
+});
+
+document.getElementById("btn-options").addEventListener("click", () => {
+  chrome.runtime.openOptionsPage();
+});
+
+document.getElementById("btn-refresh").addEventListener("click", () => {
+  render();
+});
+
+document.getElementById("btn-newtab").addEventListener("click", () => {
+  chrome.tabs.create({ url: "chrome://newtab" });
 });
