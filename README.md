@@ -4,11 +4,19 @@ Extensão de navegador (Chrome, Manifest V3) que conecta o estado de um bichinho
 
 O projeto é uma evolução de um jogo de Tamagotchi feito anteriormente em JavaScript puro, agora conectado a dados reais de comportamento de navegação — unindo front-end/game dev com raciocínio de dados e hábitos.
 
+## Screenshots
+
+| Popup | Nova aba | Configurações |
+|---|---|---|
+| _adicionar print_ | _adicionar print_ | _adicionar print_ |
+
 ## Funcionalidades
 
-- 🐾 Bichinho virtual com estados visuais (feliz, cansado, triste, com fome)
+- 🐾 Bichinho virtual com estados visuais (feliz, cansado, triste, com fome), renderizado em pixel art dentro de uma tela LCD estilo Tamagotchi original
+- 🎨 Personalização: escolha a cor da casca do dispositivo e a espécie do bichinho (gato, cachorro, dino, coelho) pela página de Configurações
 - ⏱️ Rastreamento de tempo por aba/domínio, com classificação em sites de distração, produtivos e neutros
 - 💛 Sistema de humor com 3 atributos: felicidade, energia e fome, que evoluem com o tempo de navegação e com o tempo real
+- ⚙️ Página de Configurações para adicionar/remover sites das categorias de distração e produtivos, sem precisar editar código
 - 🖼️ Interface via popup (clique no ícone) e via nova aba (new tab override), com ranking dos sites mais usados no dia
 - 🔔 Notificações leves quando o bichinho precisa de atenção
 - 💾 Persistência local via `chrome.storage` — nenhum dado sai do navegador, sem backend
@@ -25,16 +33,17 @@ O projeto é uma evolução de um jogo de Tamagotchi feito anteriormente em Java
 tamagotchi-produtividade/
 ├── manifest.json
 ├── background.js       # service worker: rastreamento de aba/domínio, orquestração
-├── mood-rules.js        # lógica pura: classificação de domínio e cálculo de humor
-├── state.js             # persistência do estado do pet (storage.local)
-├── notifications.js     # regras de notificação
-├── popup/                # UI do popup (clique no ícone)
-├── newtab/               # UI da nova aba (mais espaço, mostra ranking de sites)
-├── assets/               # sprites do bichinho
-└── icons/                 # ícones da extensão
+├── mood-rules.js         # lógica pura: classificação de domínio (lê listas do storage) e cálculo de humor
+├── state.js              # persistência do estado do pet (storage.local)
+├── notifications.js      # regras de notificação
+├── sprites.js             # matrizes de pixel art por espécie x estado de humor
+├── popup/                 # UI do popup (clique no ícone) — visual de dispositivo Tamagotchi
+├── newtab/                # UI da nova aba — mesmo visual, com ranking de sites
+├── options/                # página de Configurações: sites, cor da casca e espécie do bichinho
+└── icons/                  # ícones da extensão
 ```
 
-A lógica de humor (`mood-rules.js`) é separada do storage (`state.js` e `background.js`) para ficar fácil de testar e ajustar as regras sem mexer na integração com as APIs do Chrome.
+A lógica de humor (`mood-rules.js`) é separada do storage (`state.js` e `background.js`) para ficar fácil de testar e ajustar as regras sem mexer na integração com as APIs do Chrome. As listas de sites e a aparência (cor/espécie) vivem em `chrome.storage.local` e são editadas pela página de Configurações — nada precisa ser alterado no código para personalizar a extensão.
 
 ## Como instalar localmente
 
@@ -47,14 +56,17 @@ A lógica de humor (`mood-rules.js`) é separada do storage (`state.js` e `backg
 4. Clique em **Carregar sem compactação** e selecione a pasta do projeto.
 5. Clique no ícone da extensão ou abra uma nova aba para ver o bichinho.
 
-## Personalizando as regras
+## Personalizando
 
-As listas de sites e as taxas de humor ficam em `mood-rules.js`:
+Clique com o botão direito no ícone da extensão → **Opções** (ou pelo botão de engrenagem no próprio popup) para:
+
+- Adicionar ou remover sites das categorias de distração e produtivos
+- Escolher a cor da casca do dispositivo
+- Escolher a espécie do bichinho
+
+As taxas de humor (quanto cada categoria de site afeta felicidade/energia por minuto) ainda ficam fixas em `mood-rules.js`, caso queira ajustar o equilíbrio do jogo:
 
 ```js
-export const DISTRACTION_SITES = ["youtube.com", "instagram.com", ...];
-export const PRODUCTIVE_SITES = ["github.com", "stackoverflow.com", ...];
-
 const MOOD_RATE_PER_MINUTE = {
   distraction: -1,
   productive: +1,
@@ -65,8 +77,9 @@ const MOOD_RATE_PER_MINUTE = {
 
 ## Próximos passos
 
-- [ ] Tornar as taxas de humor e a lista de sites configuráveis pela UI
+- [ ] Tornar as taxas de humor configuráveis pela UI de Configurações
 - [ ] Extrair a lógica de renderização compartilhada entre popup e newtab
+- [ ] Aplicar o visual de dispositivo também na página de Configurações
 - [ ] Publicar na Chrome Web Store
 - [ ] Gráfico de histórico de humor ao longo dos dias
 
