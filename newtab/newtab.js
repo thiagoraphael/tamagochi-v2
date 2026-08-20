@@ -1,6 +1,8 @@
 import { getSprite } from "../sprites.js";
+import { getPaletteByShell, PALETTES } from "../palettes.js";
 
-const DEFAULT_APPEARANCE = { shellColor: "#7F77DD", species: "gato" };
+const DEFAULT_APPEARANCE = { shellColor: PALETTES[0].shell, species: "gato" };
+const SPECIES_LABELS = { gato: "GATO", cachorro: "CACHORRO", dino: "DINO", coelho: "COELHO" };
 
 function determineMood(pet) {
   if (pet.hunger > 80) return "hungry";
@@ -9,25 +11,34 @@ function determineMood(pet) {
   return "happy";
 }
 
-const MOOD_TEXT_MAP = {
-  happy: "Seu bichinho está feliz!",
-  tired: "Seu bichinho está cansado...",
-  sad: "Seu bichinho está triste.",
-  hungry: "Seu bichinho está com fome!"
+const MOOD_CONTENT = {
+  happy:  { title: "Feliz e saudável", status: "FOCO OK" },
+  tired:  { title: "Cansadinho…", status: "BAIXA ENERGIA" },
+  sad:    { title: "Meio pra baixo", status: "PRECISA DE FOCO" },
+  hungry: { title: "Com fome de foco", status: "FOME !!" }
 };
+
+function moodBlurb(mood) {
+  if (mood === "hungry") return "Alimente-o passando um tempo num site produtivo.";
+  if (mood === "sad") return "Ele sente falta do seu foco. Evite as distrações de hoje.";
+  if (mood === "tired") return "Energia baixa — considere um tempo fora do navegador.";
+  return "Você está mantendo o foco. Continue assim!";
+}
 
 function renderSprite(species, mood) {
   const grid = getSprite(species, mood);
   const container = document.getElementById("pet-sprite");
   container.innerHTML = "";
-  grid.forEach((row) => {
-    row.split("").forEach((cell) => {
-      const px = document.createElement("div");
-      px.className = "pixel";
-      px.style.background = cell === "1" ? "#3C4A34" : "transparent";
-      container.appendChild(px);
-    });
+  grid.join("").split("").forEach((ch) => {
+    const px = document.createElement("div");
+    px.className = "pixel";
+    px.style.background = ch === "#" ? "#3C4A34" : "transparent";
+    container.appendChild(px);
   });
+}
+
+function formatClock() {
+  return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 }
 
 async function renderPet() {
@@ -35,19 +46,36 @@ async function renderPet() {
   if (!pet) return;
 
   const { shellColor, species } = appearance || DEFAULT_APPEARANCE;
+  const palette = getPaletteByShell(shellColor);
   const mood = determineMood(pet);
+  const content = MOOD_CONTENT[mood];
 
-  document.getElementById("device").style.background = shellColor;
-  document.getElementById("pet-mood-text").textContent = MOOD_TEXT_MAP[mood];
+  document.documentElement.style.setProperty("--shell-color", palette.shell);
+  document.documentElement.style.setProperty("--frame-color", palette.frame);
+  document.documentElement.style.setProperty("--button-color", palette.button);
+
+  document.getElementById("species-label").textContent = SPECIES_LABELS[species] || "GATO";
+  document.getElementById("clock").textContent = formatClock();
+  document.getElementById("lcd-status").textContent = content.status;
+  document.getElementById("mood-title").textContent = content.title;
+  document.getElementById("mood-blurb").textContent = moodBlurb(mood);
+
   renderSprite(species, mood);
 
   document.getElementById("happiness-bar").style.width = pet.happiness + "%";
   document.getElementById("energy-bar").style.width = pet.energy + "%";
   document.getElementById("hunger-bar").style.width = pet.hunger + "%";
 
+  document.getElementById("happiness-bar").style.background = palette.frame;
+  document.getElementById("energy-bar").style.background = palette.shell;
+  document.getElementById("hunger-bar").style.background = palette.button;
+
   document.getElementById("happiness-value").textContent = pet.happiness.toFixed(1);
   document.getElementById("energy-value").textContent = pet.energy.toFixed(1);
   document.getElementById("hunger-value").textContent = pet.hunger.toFixed(1);
+
+  const days = Math.max(1, Math.floor((Date.now() - pet.createdAt) / 86400000));
+  document.getElementById("streak").textContent = `${days} dia${days > 1 ? "s" : ""} de uso`;
 }
 
 async function renderTopSites() {
