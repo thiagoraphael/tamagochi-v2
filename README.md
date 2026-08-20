@@ -8,7 +8,7 @@ O projeto é uma evolução de um jogo de Tamagotchi feito anteriormente em Java
 
 | Popup | Configurações |
 |---|---|
-| _adicionar print_ | _adicionar print_ |
+| ![Popup](docs/screenshots/popup.png) | ![Configurações](docs/screenshots/options.png) |
 
 _Popup e Configurações compartilham o mesmo sistema visual: dispositivo Tamagotchi, paletas de cor e sprites pixel art._
 
