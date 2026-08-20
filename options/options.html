@@ -1,58 +1,70 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Configurações — Tamagotchi da Produtividade</title>
-    <link rel="stylesheet" href="options.css" />
-  </head>
-  <body>
-    <h1>Configurações</h1>
+<head>
+  <meta charset="UTF-8" />
+  <title>Configurações — Tamagotchi da Produtividade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="options-card">
 
-    <section>
-      <h2>Personalização</h2>
-      <p class="hint">Escolha a cor da casca e a espécie do seu bichinho.</p>
-
-      <p class="sub-label">Cor da casca</p>
-      <div id="shell-colors" class="swatch-row"></div>
-
-      <p class="sub-label">Espécie</p>
-      <div id="pet-species" class="species-row"></div>
-    </section>
-
-    <section>
-      <h2>Sites de distração</h2>
-      <p class="hint">
-        Tempo nesses sites reduz a felicidade e energia do bichinho.
-      </p>
-      <div class="add-row">
-        <input
-          type="text"
-          id="distraction-input"
-          placeholder="ex: youtube.com ou https://youtube.com"
-        />
-        <button id="add-distraction-btn">Adicionar</button>
+    <div class="options-header">
+      <div id="header-icon" class="header-icon">
+        <div class="header-icon-screen"></div>
       </div>
-      <ul id="distraction-list" class="site-list"></ul>
-    </section>
-
-    <section>
-      <h2>Sites produtivos</h2>
-      <p class="hint">
-        Tempo nesses sites aumenta a felicidade e energia do bichinho.
-      </p>
-      <div class="add-row">
-        <input
-          type="text"
-          id="productive-input"
-          placeholder="ex: github.com ou https://github.com"
-        />
-        <button id="add-productive-btn">Adicionar</button>
+      <div class="header-text">
+        <span class="header-title">Configurações</span>
+        <span class="header-subtitle">Personalize o bichinho e diga quais sites contam como distração.</span>
       </div>
-      <ul id="productive-list" class="site-list"></ul>
-    </section>
+    </div>
 
-    <p id="save-feedback"></p>
+    <div class="options-body">
 
-    <script type="module" src="options.js"></script>
-  </body>
+      <div class="options-sidebar">
+        <div class="field-group">
+          <span class="field-label">COR DA CASCA</span>
+          <div id="palette-row" class="palette-row"></div>
+          <span id="palette-caption" class="field-caption"></span>
+        </div>
+
+        <div class="field-group">
+          <span class="field-label">ESPÉCIE</span>
+          <div id="species-grid" class="species-grid"></div>
+        </div>
+      </div>
+
+      <div class="options-lists">
+        <div class="list-column">
+          <div class="list-heading">
+            <span class="list-title" style="color: var(--frame-color, #D4537E);">SITES DE DISTRAÇÃO</span>
+            <span class="list-hint">Tempo aqui deixa o bichinho cansado e triste.</span>
+          </div>
+          <div class="add-row">
+            <input type="text" id="distraction-input" placeholder="exemplo.com" />
+            <button id="add-distraction-btn" style="background: var(--frame-color, #D4537E);">Adicionar</button>
+          </div>
+          <ul id="distraction-list" class="site-list"></ul>
+          <span id="distraction-count" class="list-count"></span>
+        </div>
+
+        <div class="list-column">
+          <div class="list-heading">
+            <span class="list-title" style="color: #3E8E6E;">SITES PRODUTIVOS</span>
+            <span class="list-hint">Tempo aqui alimenta e recupera a energia dele.</span>
+          </div>
+          <div class="add-row">
+            <input type="text" id="productive-input" placeholder="exemplo.com" />
+            <button id="add-productive-btn" style="background: #3E8E6E;">Adicionar</button>
+          </div>
+          <ul id="productive-list" class="site-list"></ul>
+          <span id="productive-count" class="list-count"></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
 </html>
